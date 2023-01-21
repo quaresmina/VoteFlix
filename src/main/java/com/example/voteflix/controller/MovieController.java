@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/movie")
 public class MovieController {
@@ -29,24 +31,24 @@ public class MovieController {
     }
 
     @GetMapping
-    @RequestMapping("/findMovie")
-    public ResponseEntity<Movie> findMovie(@RequestBody Long id, BindingResult bindingResult){
+    @RequestMapping("/{id}")
+    public ResponseEntity<Movie> findMovie(@PathVariable Long id){
         Optional<Movie> movieReturn = this.movieRepository.findById(id);
 
-        if(bindingResult.hasErrors() || movieReturn.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (movieReturn.isEmpty()){
+            return new ResponseEntity<Movie>(HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(this.movieRepository.findById(id).get(), HttpStatus.OK);
     }
 
     @GetMapping
-    @RequestMapping("/findAllMovies")
-    public ResponseEntity<List<Movie>> findAllMovies(@RequestBody BindingResult bindingResult){
+    @RequestMapping("/all")
+    public ResponseEntity<List<Movie>> findAllMovies(){
+        Movie movie1 = new Movie("Jornada nas estrelas", 1992, "Shakespeare");
+        System.out.println(movie1.toString());
+        this.movieRepository.save(movie1);
 
-        if(bindingResult.hasErrors()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(this.movieRepository.findAll(), HttpStatus.OK);
     }
 }
